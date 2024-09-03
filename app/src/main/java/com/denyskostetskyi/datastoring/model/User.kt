@@ -7,7 +7,7 @@ data class User(
 ) {
     companion object {
         val DEFAULT = User(
-            id = 1,
+            id = -1,
             firstName = "John",
             lastName = "Doe"
         )
