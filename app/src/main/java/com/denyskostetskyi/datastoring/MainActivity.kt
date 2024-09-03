@@ -10,10 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.denyskostetskyi.datastoring.databinding.ActivityMainBinding
+import com.denyskostetskyi.datastoring.datastore.preferences.DataStorePreferencesUserRepository
 import com.denyskostetskyi.datastoring.model.User
 import com.denyskostetskyi.datastoring.preferences.SharedPreferencesUserRepository
 import com.denyskostetskyi.datastoring.sqlite.SQLiteUserRepository
 import com.denyskostetskyi.datastoring.storage.InternalStorageUserRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
@@ -42,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         testSharedPreferencesRepository(initialUser, updatedUser)
         testInternalStorageRepository(initialUser, updatedUser)
         testSQLiteRepository(initialUser, updatedUser)
+        testDataStorePreferencesRepository(initialUser, updatedUser)
     }
 
     private fun testSharedPreferencesRepository(initialUser: User, updatedUser: User) {
@@ -72,25 +77,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun testSQLiteRepository(initialUser: User, updatedUser: User) {
-        val handlerThread = HandlerThread(INTERNAL_STORAGE_THREAD_NAME)
+        val handlerThread = HandlerThread(SQLITE_DATABASE_THREAD_NAME)
         handlerThread.start()
         val handler = Handler(handlerThread.looper)
         handler.post {
             val repository = SQLiteUserRepository(applicationContext)
             repository.saveUser(initialUser)
-            Log.d(SQLITE_DATABASE_THREAD_NAME, "Saved user: ${repository.getUser(initialUser.id)}")
+            Log.d(TAG_SQLITE_DATABASE, "Saved user: ${repository.getUser(initialUser.id)}")
             repository.updateUser(updatedUser)
-            Log.d(SQLITE_DATABASE_THREAD_NAME, "Updated user: ${repository.getUser(updatedUser.id)}")
+            Log.d(TAG_SQLITE_DATABASE, "Updated user: ${repository.getUser(updatedUser.id)}")
             val deleteResult = repository.deleteUser(updatedUser.id) > 0
-            Log.d(SQLITE_DATABASE_THREAD_NAME, "User deleted: $deleteResult")
+            Log.d(TAG_SQLITE_DATABASE, "User deleted: $deleteResult")
             repository.closeConnection()
             handlerThread.quitSafely()
+        }
+    }
+
+    private fun testDataStorePreferencesRepository(initialUser: User, updatedUser: User) {
+        val repository = DataStorePreferencesUserRepository(applicationContext)
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.saveUser(initialUser)
+            val savedUser = repository.getUser()
+            Log.d(TAG_DATASTORE_PREFERENCES, "Saved user: $savedUser")
+            repository.updateUser(updatedUser)
+            val updatedUserResult = repository.getUser()
+            Log.d(TAG_DATASTORE_PREFERENCES, "Updated user: $updatedUserResult")
+            repository.deleteUser()
+            val deletedUser = repository.getUser()
+            Log.d(TAG_DATASTORE_PREFERENCES, "User deleted: ${deletedUser == User.DEFAULT}")
         }
     }
 
     companion object {
         private const val TAG_SHARED_PREFERENCES = "SharedPreferences"
         private const val TAG_INTERNAL_STORAGE = "InternalStorage"
+        private const val TAG_SQLITE_DATABASE = "SQLiteDatabase"
+        private const val TAG_DATASTORE_PREFERENCES = "DataStorePreferences"
         private const val INTERNAL_STORAGE_THREAD_NAME = "InternalStorageTestThread"
         private const val SQLITE_DATABASE_THREAD_NAME = "SQLiteDatabaseTestThread"
     }
