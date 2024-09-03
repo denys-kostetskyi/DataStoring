@@ -50,9 +50,9 @@ class SQLiteUserRepository(applicationContext: Context) : SQLiteOpenHelper(
         )
         val user = if (cursor.moveToFirst()) {
             User(
-                cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
-                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME)),
-                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME))
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME)),
+                lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME))
             )
         } else {
             User.DEFAULT
