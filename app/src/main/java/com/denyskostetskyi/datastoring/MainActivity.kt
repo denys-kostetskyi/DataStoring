@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG_INTERNAL_STORAGE, "Updated user: ${repository.getUser()}")
             repository.deleteUser()
             Log.d(TAG_INTERNAL_STORAGE, "User deleted: ${repository.getUser() == User.DEFAULT}")
+            handlerThread.quitSafely()
         }
     }
 
