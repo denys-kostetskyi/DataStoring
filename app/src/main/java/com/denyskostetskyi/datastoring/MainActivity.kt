@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.denyskostetskyi.datastoring.databinding.ActivityMainBinding
 import com.denyskostetskyi.datastoring.model.User
 import com.denyskostetskyi.datastoring.preferences.SharedPreferencesUserRepository
+import com.denyskostetskyi.datastoring.sqlite.SQLiteUserRepository
 import com.denyskostetskyi.datastoring.storage.InternalStorageUserRepository
 
 class MainActivity : AppCompatActivity() {
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         val updatedUser = User(id = 1, firstName = "Updated", lastName = "User")
         testSharedPreferencesRepository(initialUser, updatedUser)
         testInternalStorageRepository(initialUser, updatedUser)
+        testSQLiteRepository(initialUser, updatedUser)
     }
 
     private fun testSharedPreferencesRepository(initialUser: User, updatedUser: User) {
@@ -69,9 +71,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun testSQLiteRepository(initialUser: User, updatedUser: User) {
+        val handlerThread = HandlerThread(INTERNAL_STORAGE_THREAD_NAME)
+        handlerThread.start()
+        val handler = Handler(handlerThread.looper)
+        handler.post {
+            val repository = SQLiteUserRepository(applicationContext)
+            repository.saveUser(initialUser)
+            Log.d(SQLITE_DATABASE_THREAD_NAME, "Saved user: ${repository.getUser(initialUser.id)}")
+            repository.updateUser(updatedUser)
+            Log.d(SQLITE_DATABASE_THREAD_NAME, "Updated user: ${repository.getUser(updatedUser.id)}")
+            val deleteResult = repository.deleteUser(updatedUser.id) > 0
+            Log.d(SQLITE_DATABASE_THREAD_NAME, "User deleted: $deleteResult")
+            repository.closeConnection()
+            handlerThread.quitSafely()
+        }
+    }
+
     companion object {
         private const val TAG_SHARED_PREFERENCES = "SharedPreferences"
         private const val TAG_INTERNAL_STORAGE = "InternalStorage"
         private const val INTERNAL_STORAGE_THREAD_NAME = "InternalStorageTestThread"
+        private const val SQLITE_DATABASE_THREAD_NAME = "SQLiteDatabaseTestThread"
     }
 }
