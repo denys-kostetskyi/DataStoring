@@ -24,15 +24,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun testRepositories() {
-        val user = User(id = 1, firstName = "Denys", lastName = "Kostetskyi")
-        testSharedPreferencesRepository(user)
+        val initialUser = User(id = 1, firstName = "Denys", lastName = "Kostetskyi")
+        val updatedUser = User(id = 1, firstName = "Updated", lastName = "User")
+        testSharedPreferencesRepository(initialUser, updatedUser)
     }
 
-    private fun testSharedPreferencesRepository(user: User) {
+    private fun testSharedPreferencesRepository(initialUser: User, updatedUser: User) {
         val preferences = getPreferences(Context.MODE_PRIVATE)
         val repository = SharedPreferencesUserRepository(preferences)
-        repository.saveUser(user)
-        Log.d(TAG_SHARED_PREFERENCES, "Saved User: ${repository.getUser()}")
+        repository.saveUser(initialUser)
+        Log.d(TAG_SHARED_PREFERENCES, "Saved user: ${repository.getUser()}")
+        repository.updateUser(updatedUser)
+        Log.d(TAG_SHARED_PREFERENCES, "Updated user: ${repository.getUser()}")
         repository.deleteUser()
         Log.d(TAG_SHARED_PREFERENCES, "User deleted: ${repository.getUser() == User.DEFAULT}")
     }
