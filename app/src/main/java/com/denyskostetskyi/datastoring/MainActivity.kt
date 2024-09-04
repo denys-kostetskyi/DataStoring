@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.denyskostetskyi.datastoring.databinding.ActivityMainBinding
+import com.denyskostetskyi.datastoring.datastore.keystore.KeyStoreRepository
 import com.denyskostetskyi.datastoring.datastore.preferences.DataStorePreferencesUserRepository
 import com.denyskostetskyi.datastoring.datastore.proto.DataStoreProtoUserRepository
 import com.denyskostetskyi.datastoring.model.User
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         testSQLiteRepository(initialUser, updatedUser)
         testDataStorePreferencesRepository(initialUser, updatedUser)
         testDataStoreProtoRepository(initialUser, updatedUser)
+        testKeyStoreRepository()
     }
 
     private fun testSharedPreferencesRepository(initialUser: User, updatedUser: User) {
@@ -125,12 +127,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun testKeyStoreRepository() {
+        val alias = "testKey"
+        val repository = KeyStoreRepository()
+        val key = repository.createKey(alias)
+        Log.d(TAG_KEYSTORE, "Key: $key")
+        val updatedKey = repository.updateKey(alias)
+        Log.d(TAG_KEYSTORE, "Updated key: $updatedKey")
+        repository.deleteKey(alias)
+        Log.d(TAG_KEYSTORE, "Key deleted: ${repository.getKey(alias) == null}")
+    }
+
     companion object {
         private const val TAG_SHARED_PREFERENCES = "SharedPreferences"
         private const val TAG_INTERNAL_STORAGE = "InternalStorage"
         private const val TAG_SQLITE_DATABASE = "SQLiteDatabase"
         private const val TAG_DATASTORE_PREFERENCES = "DataStorePreferences"
         private const val TAG_DATASTORE_PROTO = "DataStoreProto"
+        private const val TAG_KEYSTORE = "KeyStore"
+
         private const val INTERNAL_STORAGE_THREAD_NAME = "InternalStorageTestThread"
         private const val SQLITE_DATABASE_THREAD_NAME = "SQLiteDatabaseTestThread"
     }
