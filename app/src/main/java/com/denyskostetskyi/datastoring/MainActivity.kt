@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.denyskostetskyi.datastoring.databinding.ActivityMainBinding
 import com.denyskostetskyi.datastoring.datastore.preferences.DataStorePreferencesUserRepository
+import com.denyskostetskyi.datastoring.datastore.proto.DataStoreProtoUserRepository
 import com.denyskostetskyi.datastoring.model.User
 import com.denyskostetskyi.datastoring.preferences.SharedPreferencesUserRepository
 import com.denyskostetskyi.datastoring.sqlite.SQLiteUserRepository
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         testInternalStorageRepository(initialUser, updatedUser)
         testSQLiteRepository(initialUser, updatedUser)
         testDataStorePreferencesRepository(initialUser, updatedUser)
+        testDataStoreProtoRepository(initialUser, updatedUser)
     }
 
     private fun testSharedPreferencesRepository(initialUser: User, updatedUser: User) {
@@ -108,11 +110,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun testDataStoreProtoRepository(initialUser: User, updatedUser: User) {
+        val repository = DataStoreProtoUserRepository(applicationContext)
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.saveUser(initialUser)
+            val savedUser = repository.getUser()
+            Log.d(TAG_DATASTORE_PROTO, "Saved user: $savedUser")
+            repository.updateUser(updatedUser)
+            val updatedUserResult = repository.getUser()
+            Log.d(TAG_DATASTORE_PROTO, "Updated user: $updatedUserResult")
+            repository.deleteUser()
+            val deletedUser = repository.getUser()
+            Log.d(TAG_DATASTORE_PROTO, "User deleted: ${deletedUser == User.DEFAULT}")
+        }
+    }
+
     companion object {
         private const val TAG_SHARED_PREFERENCES = "SharedPreferences"
         private const val TAG_INTERNAL_STORAGE = "InternalStorage"
         private const val TAG_SQLITE_DATABASE = "SQLiteDatabase"
         private const val TAG_DATASTORE_PREFERENCES = "DataStorePreferences"
+        private const val TAG_DATASTORE_PROTO = "DataStoreProto"
         private const val INTERNAL_STORAGE_THREAD_NAME = "InternalStorageTestThread"
         private const val SQLITE_DATABASE_THREAD_NAME = "SQLiteDatabaseTestThread"
     }
