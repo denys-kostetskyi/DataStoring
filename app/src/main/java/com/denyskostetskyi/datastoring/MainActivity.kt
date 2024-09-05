@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.denyskostetskyi.datastoring.databinding.ActivityMainBinding
-import com.denyskostetskyi.datastoring.datastore.keystore.KeyStoreRepository
+import com.denyskostetskyi.datastoring.keystore.KeyStoreRepository
 import com.denyskostetskyi.datastoring.datastore.preferences.DataStorePreferencesUserRepository
 import com.denyskostetskyi.datastoring.datastore.proto.DataStoreProtoUserRepository
 import com.denyskostetskyi.datastoring.model.User
