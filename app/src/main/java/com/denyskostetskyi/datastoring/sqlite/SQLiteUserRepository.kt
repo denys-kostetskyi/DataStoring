@@ -13,18 +13,17 @@ import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.COLUMN_LAST
 import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.SQL_CREATE_ENTRIES
 import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.SQL_DELETE_ENTRIES
 import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.TABLE_NAME
+import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.USER_COLUMNS
 
-class SQLiteUserRepository(applicationContext: Context) : SQLiteOpenHelper(
-    applicationContext,
+class SQLiteUserRepository(context: Context) : SQLiteOpenHelper(
+    context.applicationContext,
     DATABASE_NAME,
     null,
     DATABASE_VERSION
 ) {
     private val db = writableDatabase
 
-    override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL(SQL_CREATE_ENTRIES)
-    }
+    override fun onCreate(db: SQLiteDatabase) = db.execSQL(SQL_CREATE_ENTRIES)
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL(SQL_DELETE_ENTRIES)
@@ -43,9 +42,9 @@ class SQLiteUserRepository(applicationContext: Context) : SQLiteOpenHelper(
     fun getUser(id: Int): User {
         val cursor = db.query(
             TABLE_NAME,
-            arrayOf(COLUMN_ID, COLUMN_FIRST_NAME, COLUMN_LAST_NAME),
-            "$COLUMN_ID = ?",
-            arrayOf(id.toString()),
+            USER_COLUMNS,
+            WHERE_CLAUSE_ID,
+            idToArgs(id),
             null, null, null
         )
         val user = if (cursor.moveToFirst()) {
@@ -66,13 +65,15 @@ class SQLiteUserRepository(applicationContext: Context) : SQLiteOpenHelper(
             put(COLUMN_FIRST_NAME, user.firstName)
             put(COLUMN_LAST_NAME, user.lastName)
         }
-        return db.update(TABLE_NAME, values, "$COLUMN_ID = ?", arrayOf(user.id.toString()))
+        return db.update(TABLE_NAME, values, WHERE_CLAUSE_ID, idToArgs(user.id))
     }
 
-    fun deleteUser(id: Int) =
-        db.delete(TABLE_NAME, "$COLUMN_ID = ?", arrayOf(id.toString()))
+    fun deleteUser(id: Int) = db.delete(TABLE_NAME, WHERE_CLAUSE_ID, idToArgs(id))
 
-    fun closeConnection() {
-        db.close()
+    fun closeConnection() = db.close()
+
+    companion object {
+        private const val WHERE_CLAUSE_ID = "$COLUMN_ID = ?"
+        private fun idToArgs(id: Int) = arrayOf(id.toString())
     }
 }
