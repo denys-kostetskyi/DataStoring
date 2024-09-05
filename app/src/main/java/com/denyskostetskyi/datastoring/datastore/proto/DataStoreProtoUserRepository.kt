@@ -1,26 +1,21 @@
 package com.denyskostetskyi.datastoring.datastore.proto
 
-import android.content.Context
-import androidx.datastore.dataStore
+import androidx.datastore.core.DataStore
 import com.denyskostetskyi.datastoring.model.User
 import com.denyskostetskyi.datastoring.proto.UserProto
 import kotlinx.coroutines.flow.first
 
-class DataStoreProtoUserRepository(private val applicationContext: Context) {
-    private val Context.dataStore by dataStore(fileName = FILE_NAME, serializer = UserSerializer)
-
-    suspend fun saveUser(user: User) {
-        applicationContext.dataStore.updateData { currentUser ->
-            currentUser.toBuilder()
-                .setId(user.id)
-                .setFirstName(user.firstName)
-                .setLastName(user.lastName)
-                .build()
-        }
+class DataStoreProtoUserRepository(private val dataStore: DataStore<UserProto>) {
+    suspend fun saveUser(user: User) = dataStore.updateData { currentUser ->
+        currentUser.toBuilder()
+            .setId(user.id)
+            .setFirstName(user.firstName)
+            .setLastName(user.lastName)
+            .build()
     }
 
     suspend fun getUser(): User {
-        val userProto = applicationContext.dataStore.data.first()
+        val userProto = dataStore.data.first()
         return if (userProto == UserProto.getDefaultInstance()) {
             User.DEFAULT
         } else {
@@ -34,13 +29,7 @@ class DataStoreProtoUserRepository(private val applicationContext: Context) {
 
     suspend fun updateUser(user: User) = saveUser(user)
 
-    suspend fun deleteUser() {
-        applicationContext.dataStore.updateData {
-            it.toBuilder().clear().build()
-        }
-    }
-
-    companion object {
-        private const val FILE_NAME = "user_proto"
+    suspend fun deleteUser() = dataStore.updateData {
+        it.toBuilder().clear().build()
     }
 }

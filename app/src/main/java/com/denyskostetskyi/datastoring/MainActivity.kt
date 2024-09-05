@@ -9,10 +9,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.datastore.dataStore
 import androidx.datastore.preferences.preferencesDataStore
 import com.denyskostetskyi.datastoring.databinding.ActivityMainBinding
 import com.denyskostetskyi.datastoring.datastore.preferences.DataStorePreferencesUserRepository
 import com.denyskostetskyi.datastoring.datastore.proto.DataStoreProtoUserRepository
+import com.denyskostetskyi.datastoring.datastore.proto.UserSerializer
 import com.denyskostetskyi.datastoring.keystore.KeyStoreRepository
 import com.denyskostetskyi.datastoring.model.User
 import com.denyskostetskyi.datastoring.preferences.SharedPreferencesUserRepository
@@ -30,6 +32,10 @@ class MainActivity : AppCompatActivity() {
     private val binding get() = _binding ?: throw RuntimeException("ActivityMainBinding is null")
 
     private val Context.dataStorePreferences by preferencesDataStore(name = DATASTORE_PREFS_NAME)
+    private val Context.dataStore by dataStore(
+        fileName = DATASTORE_PROTO_NAME,
+        serializer = UserSerializer
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,7 +141,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun testDataStoreProtoRepository(initialUser: User, updatedUser: User) {
-        val repository = DataStoreProtoUserRepository(applicationContext)
+        val repository = DataStoreProtoUserRepository(dataStore)
         CoroutineScope(Dispatchers.IO).launch {
             repository.saveUser(initialUser)
             val savedUser = repository.getUser()
@@ -173,5 +179,6 @@ class MainActivity : AppCompatActivity() {
         private const val SQLITE_DATABASE_THREAD_NAME = "SQLiteDatabaseTestThread"
 
         private const val DATASTORE_PREFS_NAME = "user_preferences"
+        private const val DATASTORE_PROTO_NAME = "user_proto"
     }
 }
