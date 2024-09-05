@@ -1,6 +1,6 @@
-package com.denyskostetskyi.datastoring.room
+package com.denyskostetskyi.datastoring.data.room
 
-import com.denyskostetskyi.datastoring.model.User
+import com.denyskostetskyi.datastoring.domain.model.User
 
 class UserMapper {
     fun mapEntityToDbModel(user: User) = UserDbModel(

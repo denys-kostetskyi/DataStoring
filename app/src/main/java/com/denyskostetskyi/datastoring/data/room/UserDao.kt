@@ -1,4 +1,4 @@
-package com.denyskostetskyi.datastoring.room
+package com.denyskostetskyi.datastoring.data.room
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -15,8 +15,8 @@ interface UserDao {
     suspend fun saveUser(user: UserDbModel)
 
     @Update
-    suspend fun updateUser(user: UserDbModel)
+    suspend fun updateUser(user: UserDbModel): Int
 
     @Query("DELETE FROM users WHERE id = :id")
-    suspend fun deleteUser(id: Int)
+    suspend fun deleteUser(id: Int): Int
 }

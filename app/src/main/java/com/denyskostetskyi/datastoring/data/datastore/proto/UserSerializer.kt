@@ -1,4 +1,4 @@
-package com.denyskostetskyi.datastoring.datastore.proto
+package com.denyskostetskyi.datastoring.data.datastore.proto
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer

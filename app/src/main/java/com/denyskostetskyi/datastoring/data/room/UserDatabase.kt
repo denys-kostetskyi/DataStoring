@@ -1,4 +1,4 @@
-package com.denyskostetskyi.datastoring.room
+package com.denyskostetskyi.datastoring.data.room
 
 import android.content.Context
 import androidx.room.Database
@@ -10,12 +10,12 @@ abstract class UserDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
 
     companion object {
-        private const val DATABASE_NAME = "users.db"
+        private const val DATABASE_NAME = "users_room.db"
 
         @Volatile
         private var instance: UserDatabase? = null
 
-        fun getDatabase(context: Context): UserDatabase {
+        fun getInstance(context: Context): UserDatabase {
             return instance ?: synchronized(this) {
                 Room.databaseBuilder(
                     context.applicationContext,
