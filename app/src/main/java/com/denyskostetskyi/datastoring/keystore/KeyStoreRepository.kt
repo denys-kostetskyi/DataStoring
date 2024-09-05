@@ -1,4 +1,4 @@
-package com.denyskostetskyi.datastoring.datastore.keystore
+package com.denyskostetskyi.datastoring.keystore
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
