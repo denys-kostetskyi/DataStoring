@@ -1,15 +1,16 @@
-package com.denyskostetskyi.datastoring.storage
+package com.denyskostetskyi.datastoring.data.storage
 
 import android.content.Context
 import com.denyskostetskyi.datastoring.domain.model.User
+import com.denyskostetskyi.datastoring.domain.repository.UserRepository
 import java.io.File
 
-class InternalStorageUserRepository(context: Context) {
+class InternalStorageUserRepository(context: Context) : UserRepository {
     private val applicationContext = context.applicationContext
 
-    fun saveUser(user: User) = getUserFile().writeText(userToString(user))
+    override suspend fun saveUser(user: User) = getUserFile().writeText(userToString(user))
 
-    fun getUser(): User {
+    override suspend fun getUser(id: Int): User {
         val file = getUserFile()
         if (!file.exists()) {
             return User.DEFAULT
@@ -18,9 +19,15 @@ class InternalStorageUserRepository(context: Context) {
         return parseUser(text)
     }
 
-    fun updateUser(user: User) = saveUser(user)
+    override suspend fun updateUser(user: User): Boolean {
+        saveUser(user)
+        return true
+    }
 
-    fun deleteUser() = getUserFile().delete()
+    override suspend fun deleteUser(id: Int): Boolean {
+        getUserFile().delete()
+        return true
+    }
 
     private fun getUserFile() = File(applicationContext.filesDir, FILE_NAME)
 

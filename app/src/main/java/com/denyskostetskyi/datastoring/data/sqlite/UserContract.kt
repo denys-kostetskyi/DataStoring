@@ -1,4 +1,4 @@
-package com.denyskostetskyi.datastoring.sqlite
+package com.denyskostetskyi.datastoring.data.sqlite
 
 import android.provider.BaseColumns
 

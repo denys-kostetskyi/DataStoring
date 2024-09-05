@@ -1,26 +1,27 @@
-package com.denyskostetskyi.datastoring.sqlite
+package com.denyskostetskyi.datastoring.data.sqlite
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.denyskostetskyi.datastoring.data.sqlite.UserContract.DATABASE_NAME
+import com.denyskostetskyi.datastoring.data.sqlite.UserContract.DATABASE_VERSION
+import com.denyskostetskyi.datastoring.data.sqlite.UserContract.UserEntry.COLUMN_FIRST_NAME
+import com.denyskostetskyi.datastoring.data.sqlite.UserContract.UserEntry.COLUMN_ID
+import com.denyskostetskyi.datastoring.data.sqlite.UserContract.UserEntry.COLUMN_LAST_NAME
+import com.denyskostetskyi.datastoring.data.sqlite.UserContract.UserEntry.SQL_CREATE_ENTRIES
+import com.denyskostetskyi.datastoring.data.sqlite.UserContract.UserEntry.SQL_DELETE_ENTRIES
+import com.denyskostetskyi.datastoring.data.sqlite.UserContract.UserEntry.TABLE_NAME
+import com.denyskostetskyi.datastoring.data.sqlite.UserContract.UserEntry.USER_COLUMNS
 import com.denyskostetskyi.datastoring.domain.model.User
-import com.denyskostetskyi.datastoring.sqlite.UserContract.DATABASE_NAME
-import com.denyskostetskyi.datastoring.sqlite.UserContract.DATABASE_VERSION
-import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.COLUMN_FIRST_NAME
-import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.COLUMN_ID
-import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.COLUMN_LAST_NAME
-import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.SQL_CREATE_ENTRIES
-import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.SQL_DELETE_ENTRIES
-import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.TABLE_NAME
-import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.USER_COLUMNS
+import com.denyskostetskyi.datastoring.domain.repository.UserRepository
 
 class SQLiteUserRepository(context: Context) : SQLiteOpenHelper(
     context.applicationContext,
     DATABASE_NAME,
     null,
     DATABASE_VERSION
-) {
+), UserRepository {
     private val db = writableDatabase
 
     override fun onCreate(db: SQLiteDatabase) = db.execSQL(SQL_CREATE_ENTRIES)
@@ -30,7 +31,7 @@ class SQLiteUserRepository(context: Context) : SQLiteOpenHelper(
         onCreate(db)
     }
 
-    fun saveUser(user: User) {
+    override suspend fun saveUser(user: User) {
         val values = ContentValues().apply {
             put(COLUMN_ID, user.id)
             put(COLUMN_FIRST_NAME, user.firstName)
@@ -39,7 +40,7 @@ class SQLiteUserRepository(context: Context) : SQLiteOpenHelper(
         db.insert(TABLE_NAME, null, values)
     }
 
-    fun getUser(id: Int): User {
+    override suspend fun getUser(id: Int): User {
         val cursor = db.query(
             TABLE_NAME,
             USER_COLUMNS,
@@ -60,15 +61,16 @@ class SQLiteUserRepository(context: Context) : SQLiteOpenHelper(
         return user
     }
 
-    fun updateUser(user: User): Int {
+    override suspend fun updateUser(user: User): Boolean {
         val values = ContentValues().apply {
             put(COLUMN_FIRST_NAME, user.firstName)
             put(COLUMN_LAST_NAME, user.lastName)
         }
-        return db.update(TABLE_NAME, values, WHERE_CLAUSE_ID, idToArgs(user.id))
+        return db.update(TABLE_NAME, values, WHERE_CLAUSE_ID, idToArgs(user.id)) > 0
     }
 
-    fun deleteUser(id: Int) = db.delete(TABLE_NAME, WHERE_CLAUSE_ID, idToArgs(id))
+    override suspend fun deleteUser(id: Int): Boolean =
+        db.delete(TABLE_NAME, WHERE_CLAUSE_ID, idToArgs(id)) > 0
 
     fun closeConnection() = db.close()
 

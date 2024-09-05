@@ -1,4 +1,4 @@
-package com.denyskostetskyi.datastoring.room
+package com.denyskostetskyi.datastoring.data.room
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
