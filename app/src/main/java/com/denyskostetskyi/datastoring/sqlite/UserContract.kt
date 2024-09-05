@@ -3,7 +3,7 @@ package com.denyskostetskyi.datastoring.sqlite
 import android.provider.BaseColumns
 
 object UserContract {
-    const val DATABASE_NAME = "user.db"
+    const val DATABASE_NAME = "users_sqlite.db"
     const val DATABASE_VERSION = 1
 
     object UserEntry : BaseColumns {
