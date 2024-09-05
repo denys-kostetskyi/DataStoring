@@ -13,11 +13,11 @@ class SharedPreferencesUserRepository(private val preferences: SharedPreferences
     }
 
     fun getUser() = with(preferences) {
-        User(
-            id = getInt(KEY_ID, User.DEFAULT.id),
-            firstName = getString(KEY_FIRST_NAME, null) ?: User.DEFAULT.firstName,
-            lastName = getString(KEY_LAST_NAME, null) ?: User.DEFAULT.lastName,
-        )
+        val id = getInt(KEY_ID, User.DEFAULT.id)
+        if (id == User.DEFAULT.id) return User.DEFAULT
+        val firstName = getString(KEY_FIRST_NAME, null) ?: return User.DEFAULT
+        val lastName = getString(KEY_LAST_NAME, null) ?: return User.DEFAULT
+        User(id, firstName, lastName)
     }
 
     fun updateUser(user: User) = saveUser(user)
