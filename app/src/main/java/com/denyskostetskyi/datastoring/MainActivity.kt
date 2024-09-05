@@ -9,10 +9,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.datastore.preferences.preferencesDataStore
 import com.denyskostetskyi.datastoring.databinding.ActivityMainBinding
-import com.denyskostetskyi.datastoring.keystore.KeyStoreRepository
 import com.denyskostetskyi.datastoring.datastore.preferences.DataStorePreferencesUserRepository
 import com.denyskostetskyi.datastoring.datastore.proto.DataStoreProtoUserRepository
+import com.denyskostetskyi.datastoring.keystore.KeyStoreRepository
 import com.denyskostetskyi.datastoring.model.User
 import com.denyskostetskyi.datastoring.preferences.SharedPreferencesUserRepository
 import com.denyskostetskyi.datastoring.room.RoomUserRepository
@@ -27,6 +28,8 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding ?: throw RuntimeException("ActivityMainBinding is null")
+
+    private val Context.dataStorePreferences by preferencesDataStore(name = DATASTORE_PREFS_NAME)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,7 +120,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun testDataStorePreferencesRepository(initialUser: User, updatedUser: User) {
-        val repository = DataStorePreferencesUserRepository(applicationContext)
+        val repository = DataStorePreferencesUserRepository(dataStorePreferences)
         CoroutineScope(Dispatchers.IO).launch {
             repository.saveUser(initialUser)
             val savedUser = repository.getUser()
@@ -168,5 +171,7 @@ class MainActivity : AppCompatActivity() {
 
         private const val INTERNAL_STORAGE_THREAD_NAME = "InternalStorageTestThread"
         private const val SQLITE_DATABASE_THREAD_NAME = "SQLiteDatabaseTestThread"
+
+        private const val DATASTORE_PREFS_NAME = "user_preferences"
     }
 }
