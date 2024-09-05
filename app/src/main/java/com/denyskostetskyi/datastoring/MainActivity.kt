@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun testRepositories() {
         val initialUser = User(id = 1, firstName = "Denys", lastName = "Kostetskyi")
-        val updatedUser = User(id = 1, firstName = "Updated", lastName = "User")
+        val updatedUser = initialUser.copy(firstName = "Updated", lastName = "User")
         testSharedPreferencesRepository(initialUser, updatedUser)
         testInternalStorageRepository(initialUser, updatedUser)
         testSQLiteRepository(initialUser, updatedUser)
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun testRoomRepository(initialUser: User, updatedUser: User) {
-        val userDao = UserDatabase.getDatabase(this).userDao()
+        val userDao = UserDatabase.getInstance(this).userDao()
         val repository = RoomUserRepository(userDao, UserMapper())
         CoroutineScope(Dispatchers.IO).launch {
             repository.saveUser(initialUser)
