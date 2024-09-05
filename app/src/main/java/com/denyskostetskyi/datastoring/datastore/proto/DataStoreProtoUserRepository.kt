@@ -1,7 +1,7 @@
 package com.denyskostetskyi.datastoring.datastore.proto
 
 import androidx.datastore.core.DataStore
-import com.denyskostetskyi.datastoring.model.User
+import com.denyskostetskyi.datastoring.domain.model.User
 import com.denyskostetskyi.datastoring.proto.UserProto
 import kotlinx.coroutines.flow.first
 

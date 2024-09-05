@@ -1,7 +1,7 @@
 package com.denyskostetskyi.datastoring.preferences
 
 import android.content.SharedPreferences
-import com.denyskostetskyi.datastoring.model.User
+import com.denyskostetskyi.datastoring.domain.model.User
 
 class SharedPreferencesUserRepository(private val preferences: SharedPreferences) {
     fun saveUser(user: User) {

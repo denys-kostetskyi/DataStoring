@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.denyskostetskyi.datastoring.model.User
+import com.denyskostetskyi.datastoring.domain.model.User
 import kotlinx.coroutines.flow.first
 
 class DataStorePreferencesUserRepository(private val dataStore: DataStore<Preferences>) {

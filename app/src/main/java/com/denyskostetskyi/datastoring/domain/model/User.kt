@@ -1,4 +1,4 @@
-package com.denyskostetskyi.datastoring.model
+package com.denyskostetskyi.datastoring.domain.model
 
 data class User(
     val id: Int,

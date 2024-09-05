@@ -1,7 +1,7 @@
 package com.denyskostetskyi.datastoring.storage
 
 import android.content.Context
-import com.denyskostetskyi.datastoring.model.User
+import com.denyskostetskyi.datastoring.domain.model.User
 import java.io.File
 
 class InternalStorageUserRepository(context: Context) {

@@ -4,7 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.denyskostetskyi.datastoring.model.User
+import com.denyskostetskyi.datastoring.domain.model.User
 import com.denyskostetskyi.datastoring.sqlite.UserContract.DATABASE_NAME
 import com.denyskostetskyi.datastoring.sqlite.UserContract.DATABASE_VERSION
 import com.denyskostetskyi.datastoring.sqlite.UserContract.UserEntry.COLUMN_FIRST_NAME

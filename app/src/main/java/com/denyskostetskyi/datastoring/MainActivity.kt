@@ -16,7 +16,7 @@ import com.denyskostetskyi.datastoring.datastore.preferences.DataStorePreference
 import com.denyskostetskyi.datastoring.datastore.proto.DataStoreProtoUserRepository
 import com.denyskostetskyi.datastoring.datastore.proto.UserSerializer
 import com.denyskostetskyi.datastoring.keystore.KeyStoreRepository
-import com.denyskostetskyi.datastoring.model.User
+import com.denyskostetskyi.datastoring.domain.model.User
 import com.denyskostetskyi.datastoring.preferences.SharedPreferencesUserRepository
 import com.denyskostetskyi.datastoring.room.RoomUserRepository
 import com.denyskostetskyi.datastoring.room.UserDatabase
