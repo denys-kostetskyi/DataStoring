@@ -10,7 +10,7 @@ class RoomUserRepository(private val userDao: UserDao, private val userMapper: U
 
     suspend fun getUser(id: Int): User {
         val userDbModel = userDao.getUser(id)
-        return userMapper.mapDbModelToEntity(userDbModel)
+        return if (userDbModel == null) User.DEFAULT else userMapper.mapDbModelToEntity(userDbModel)
     }
 
     suspend fun updateUser(user: User) {

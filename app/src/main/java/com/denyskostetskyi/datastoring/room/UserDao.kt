@@ -9,7 +9,7 @@ import androidx.room.Update
 @Dao
 interface UserDao {
     @Query("SELECT * FROM users WHERE id = :id")
-    suspend fun getUser(id: Int): UserDbModel
+    suspend fun getUser(id: Int): UserDbModel?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveUser(user: UserDbModel)

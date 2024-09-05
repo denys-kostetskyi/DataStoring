@@ -15,6 +15,9 @@ import com.denyskostetskyi.datastoring.datastore.preferences.DataStorePreference
 import com.denyskostetskyi.datastoring.datastore.proto.DataStoreProtoUserRepository
 import com.denyskostetskyi.datastoring.model.User
 import com.denyskostetskyi.datastoring.preferences.SharedPreferencesUserRepository
+import com.denyskostetskyi.datastoring.room.RoomUserRepository
+import com.denyskostetskyi.datastoring.room.UserDatabase
+import com.denyskostetskyi.datastoring.room.UserMapper
 import com.denyskostetskyi.datastoring.sqlite.SQLiteUserRepository
 import com.denyskostetskyi.datastoring.storage.InternalStorageUserRepository
 import kotlinx.coroutines.CoroutineScope
@@ -48,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         testSharedPreferencesRepository(initialUser, updatedUser)
         testInternalStorageRepository(initialUser, updatedUser)
         testSQLiteRepository(initialUser, updatedUser)
+        testRoomRepository(initialUser, updatedUser)
         testDataStorePreferencesRepository(initialUser, updatedUser)
         testDataStoreProtoRepository(initialUser, updatedUser)
         testKeyStoreRepository()
@@ -97,6 +101,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun testRoomRepository(initialUser: User, updatedUser: User) {
+        val userDao = UserDatabase.getDatabase(this).userDao()
+        val repository = RoomUserRepository(userDao, UserMapper())
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.saveUser(initialUser)
+            val savedUser = repository.getUser(initialUser.id)
+            Log.d(TAG_ROOM, "Saved user: $savedUser")
+            repository.updateUser(updatedUser)
+            Log.d(TAG_ROOM, "Updated user: ${repository.getUser(updatedUser.id)}")
+            repository.deleteUser(updatedUser.id)
+            val deletedUser = repository.getUser(updatedUser.id)
+            Log.d(TAG_ROOM, "User deleted: ${deletedUser == User.DEFAULT}")
+        }
+    }
+
     private fun testDataStorePreferencesRepository(initialUser: User, updatedUser: User) {
         val repository = DataStorePreferencesUserRepository(applicationContext)
         CoroutineScope(Dispatchers.IO).launch {
@@ -142,6 +161,7 @@ class MainActivity : AppCompatActivity() {
         private const val TAG_SHARED_PREFERENCES = "SharedPreferences"
         private const val TAG_INTERNAL_STORAGE = "InternalStorage"
         private const val TAG_SQLITE_DATABASE = "SQLiteDatabase"
+        private const val TAG_ROOM = "Room"
         private const val TAG_DATASTORE_PREFERENCES = "DataStorePreferences"
         private const val TAG_DATASTORE_PROTO = "DataStoreProto"
         private const val TAG_KEYSTORE = "KeyStore"
